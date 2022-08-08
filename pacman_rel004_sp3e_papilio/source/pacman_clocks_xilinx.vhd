@@ -51,14 +51,15 @@ use UNISIM.Vcomponents.all;
 
 entity PACMAN_CLOCKS is
   port (
-    I_CLK_REF         : in    std_logic;
+--    I_CLK_REF         : in    std_logic; -- 32MHz
+    I_CLK             : in    std_logic; -- 24.576MHz
     I_RESET_L         : in    std_logic;
     --
-    O_CLK_REF         : out   std_logic;
+--    O_CLK_REF         : out   std_logic; -- 32MHz
     --
-    O_ENA_12          : out   std_logic;
-    O_ENA_6           : out   std_logic;
-    O_CLK             : out   std_logic;
+    O_ENA_12          : out   std_logic; -- 12.288MHz
+    O_ENA_6           : out   std_logic; --  6.144MHz
+--    O_CLK             : out   std_logic; -- 24.576MHz
     O_RESET           : out   std_logic
     );
 end;
@@ -104,8 +105,8 @@ architecture RTL of PACMAN_CLOCKS is
 
 begin
 
-  reset_dcm_h <= not I_RESET_L;
-  IBUFG0 : IBUFG port map (I=> I_CLK_REF, O => clk_ref_ibuf);
+--  reset_dcm_h <= not I_RESET_L;
+--  IBUFG0 : IBUFG port map (I=> I_CLK_REF, O => clk_ref_ibuf);
 
 --  dcma   : if true generate
 --    attribute DLL_FREQUENCY_MODE    of dcm_inst : label is "LOW";
@@ -119,44 +120,45 @@ begin
 --    attribute CLKIN_PERIOD          of dcm_inst : label is 31.25;
 --    --
 --    begin
-    dcm_inst : DCM_SP
-      generic map (
-        DLL_FREQUENCY_MODE    => "LOW",
-        DUTY_CYCLE_CORRECTION => TRUE,
-        CLKOUT_PHASE_SHIFT    => "NONE",
-        PHASE_SHIFT           => 0,
-        CLKFX_MULTIPLY        => 10,
-        CLKFX_DIVIDE          => 13,
-        CLKDV_DIVIDE          => 2.0,
-        STARTUP_WAIT          => FALSE,
-        CLKIN_PERIOD          => 31.25
-       )
-      port map (
-        CLKIN    => clk_ref_ibuf,
-        CLKFB    => clk_dcm_0_bufg,
-        DSSEN    => '0',
-        PSINCDEC => '0',
-        PSEN     => '0',
-        PSCLK    => '0',
-        RST      => reset_dcm_h,
-        CLK0     => clk_dcm_op_0,
-        CLK90    => open,
-        CLK180   => open,
-        CLK270   => open,
-        CLK2X    => open,
-        CLK2X180 => open,
-        CLKDV    => open,
-        CLKFX    => clk_dcm_op_dv,
-        CLKFX180 => open,
-        LOCKED   => dcm_locked,
-        PSDONE   => open
-       );
+--    dcm_inst : DCM_SP
+--      generic map (
+--        DLL_FREQUENCY_MODE    => "LOW",
+--        DUTY_CYCLE_CORRECTION => TRUE,
+--        CLKOUT_PHASE_SHIFT    => "NONE",
+--        PHASE_SHIFT           => 0,
+--        CLKFX_MULTIPLY        => 10,
+--        CLKFX_DIVIDE          => 13,
+--        CLKDV_DIVIDE          => 2.0,
+--        STARTUP_WAIT          => FALSE,
+--        CLKIN_PERIOD          => 31.25
+--       )
+--      port map (
+--        CLKIN    => clk_ref_ibuf,
+--        CLKFB    => clk_dcm_0_bufg,
+--        DSSEN    => '0',
+--        PSINCDEC => '0',
+--        PSEN     => '0',
+--        PSCLK    => '0',
+--        RST      => reset_dcm_h,
+--        CLK0     => clk_dcm_op_0,
+--        CLK90    => open,
+--        CLK180   => open,
+--        CLK270   => open,
+--        CLK2X    => open,
+--        CLK2X180 => open,
+--        CLKDV    => open,
+--        CLKFX    => clk_dcm_op_dv,
+--        CLKFX180 => open,
+--        LOCKED   => dcm_locked,
+--        PSDONE   => open
+--       );
 
 
-  BUFG0 : BUFG port map (I=> clk_dcm_op_0,  O => clk_dcm_0_bufg);
-  O_CLK_REF <= clk_dcm_0_bufg;
-  BUFG1 : BUFG port map (I=> clk_dcm_op_dv, O => clk);
-  O_CLK <= clk;
+--  BUFG0 : BUFG port map (I=> clk_dcm_op_0,  O => clk_dcm_0_bufg);
+--  O_CLK_REF <= clk_dcm_0_bufg;
+--  BUFG1 : BUFG port map (I=> clk_dcm_op_dv, O => clk);
+--  O_CLK <= clk;
+  clk <= I_CLK;
 
   p_delay : process(I_RESET_L, clk)
   begin

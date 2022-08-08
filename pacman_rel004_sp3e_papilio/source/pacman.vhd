@@ -73,7 +73,8 @@ entity PACMAN is
     O_LED                 : out   std_logic_vector(2 downto 0);
     --
     I_RESET               : in    std_logic;
-    OSC_IN                : in    std_logic
+--    OSC_IN                : in    std_logic; -- 32MHz
+    CLK_24MHz             : in    std_logic  -- 24.576MHz
     );
 end;
 
@@ -193,16 +194,20 @@ begin
   --
   -- clocks
   --
+--  clk_ref <= OSC_IN;
+  clk <= CLK_24MHz;
+  
   u_clocks : entity work.PACMAN_CLOCKS
     port map (
-      I_CLK_REF  => OSC_IN,
+--      I_CLK_REF  => OSC_IN,
+      I_CLK      => CLK_24MHz,
       I_RESET_L  => I_RESET_L,
       --
-      O_CLK_REF  => clk_ref,
+--      O_CLK_REF  => clk_ref,
       --
       O_ENA_12   => ena_12,
       O_ENA_6    => ena_6,
-      O_CLK      => clk,
+--      O_CLK      => clk,
       O_RESET    => reset
       );
   --
@@ -631,13 +636,13 @@ begin
       );
 
 --	Commented out for use on the Papilio board so ROMs can be merged into the bitstream. Not enough BRAM to include this for the Papilio One.
---  u_program_wiz : entity work.ROM_PGM_1
---    port map (
---      CLK         => clk,
---      ENA         => ena_6,
---      ADDR        => cpu_addr(12 downto 0),
---      DATA        => program_rom_dinh
---      );
+  u_program_wiz : entity work.ROM_PGM_1
+    port map (
+      CLK         => clk,
+      ENA         => ena_6,
+      ADDR        => cpu_addr(12 downto 0),
+      DATA        => program_rom_dinh
+      );
 
   --
   -- video subsystem
@@ -740,7 +745,8 @@ begin
       msbi_g => 7
     )
     port  map(
-      clk_i   => clk_ref,
+--      clk_i   => clk_ref,
+      clk_i   => clk,
       res_n_i => I_RESET_L,
       dac_i   => audio,
       dac_o   => audio_pwm
@@ -753,15 +759,16 @@ begin
   button_in(4 downto 0) <= joystick_reg(4 downto 0);
   button_in(13 downto 9) <= joystick_reg2(4 downto 0);
   
-  u_debounce : entity work.PACMAN_DEBOUNCE
-  generic map (
-    G_WIDTH => 14
-    )
-  port map (
-    I_BUTTON => button_in,
-    O_BUTTON => button_debounced,
-    CLK      => clk
-    );
+--  u_debounce : entity work.PACMAN_DEBOUNCE
+--  generic map (
+--    G_WIDTH => 14
+--    )
+--  port map (
+--    I_BUTTON => button_in,
+--    O_BUTTON => button_debounced,
+--    CLK      => clk
+--    );
+button_debounced <= button_in;
 
 --button_debounced	Arcade MegaWing Location
 --			8						RIGHT PushButton
@@ -782,6 +789,7 @@ begin
       in0_reg(7) <= not button_debounced(6); -- credit	Up Pushbutton
       in0_reg(6) <= '1';							-- coin2    
       in0_reg(5) <= not button_debounced(7); -- coin1		DOWN PushButton
+	  -- in0_reg(4) '0' = PACMAN is Force Clear
       in0_reg(4) <= '1'; 							-- test_l dipswitch (rack advance)
       in0_reg(3) <= button_debounced(1); 		-- p1 down
       in0_reg(2) <= button_debounced(3); 		-- p1 right
@@ -791,7 +799,9 @@ begin
       in1_reg(7) <= '1'; 							-- table 1-upright 0-cocktail
       in1_reg(6) <= not button_debounced(8); -- start2		RIGHT PushButton
       in1_reg(5) <= not button_debounced(5); -- start1		LEFT PushButton
-      in1_reg(4) <= button_debounced(13);		-- test and fire	
+	  -- in1_reg(4) PACMAN is Service Mode, Others Fire/ Shoot
+--      in1_reg(4) <= button_debounced(13);		-- test and fire	
+      in1_reg(4) <= button_debounced(4);		-- test and fire	
       in1_reg(3) <= button_debounced(10);		-- p2 down
 		if HWSEL_PACMANICMINERMAN = true		then		-- jump for pacmmm else 
 			in1_reg(2) <= button_debounced(4);
