@@ -1,6 +1,9 @@
 # Papilio-Arcade
 A collection of arcade games targeted for Papilio FPGA boards. Many of the games are from FPGAArcade.com.
 
+Original Hardware  
+http://papilio.cc/index.php?n=Papilio.PapilioArcade  
+
 ## FPGA Spartan-6 XC6SLX16でアーケードゲームを動かす！
 GadgetFactory/Papilio-Arcade FPGA board用の実装を ALINX AX309 cloneで動く様に改変したものです。  
 
