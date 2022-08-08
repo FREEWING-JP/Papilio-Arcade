@@ -22,13 +22,14 @@ use UNISIM.Vcomponents.all;
 
 entity CLOCKGEN is
   port (
-    CLKIN_IN        : in  std_logic;
+--    CLKIN_IN        : in  std_logic;
+    CLK_36M        : in  std_logic; -- 36.864MHz
     RST_IN          : in  std_logic;
     --
-		O_CLK_36M       : out std_logic;
-		O_CLK_18M       : out std_logic;
-		O_CLK_12M       : out std_logic;
-		O_CLK_06M       : out std_logic;
+--		O_CLK_36M       : out std_logic;
+		O_CLK_18M       : out std_logic; -- 18.432MHz
+		O_CLK_12M       : out std_logic; -- 12.288MHz
+		O_CLK_06M       : out std_logic; --  6.144MHz
 		O_CLK_06Mn      : out std_logic
   );
 end;
@@ -40,7 +41,7 @@ architecture RTL of CLOCKGEN is
   signal CLKFB_IN                 : std_logic := '0';
   signal CLK0_BUF                 : std_logic := '0';
   signal CLKFX_BUF                : std_logic := '0';
-  signal CLK_36M                  : std_logic := '0';
+--  signal CLK_36M                  : std_logic := '0';
   signal CLK_12M                  : std_logic := '0';
   signal CLK_18M                  : std_logic := '0';
   signal CLK_6M                   : std_logic := '0';
@@ -52,48 +53,48 @@ architecture RTL of CLOCKGEN is
 
 begin
 
-    dcm_inst : DCM_SP
-      generic map (
-        DLL_FREQUENCY_MODE    => "LOW",
-        DUTY_CYCLE_CORRECTION => TRUE,
-        CLKOUT_PHASE_SHIFT    => "NONE",
-        PHASE_SHIFT           => 0,
-        CLKFX_MULTIPLY        => 8,
-        CLKFX_DIVIDE          => 7,
-        CLKDV_DIVIDE          => 2.0,
-        STARTUP_WAIT          => FALSE,
-        CLKIN_PERIOD          => 31.25
-       )
-      port map (
-        CLKIN    => CLKIN_IBUFG,
-        CLKFB    => CLKFB_IN,
-        DSSEN    => '0',
-        PSINCDEC => '0',
-        PSEN     => '0',
-        PSCLK    => '0',
-        RST      => RST_IN,
-        CLK0     => CLK0_BUF,
-        CLK90    => open,
-        CLK180   => open,
-        CLK270   => open,
-        CLK2X    => open,
-        CLK2X180 => open,
-        CLKDV    => open,
-        CLKFX    => CLKFX_BUF,
-        CLKFX180 => open,
-        LOCKED   => I_DCM_LOCKED,
-        PSDONE   => open
-       );
+--    dcm_inst : DCM_SP
+--      generic map (
+--        DLL_FREQUENCY_MODE    => "LOW",
+--        DUTY_CYCLE_CORRECTION => TRUE,
+--        CLKOUT_PHASE_SHIFT    => "NONE",
+--        PHASE_SHIFT           => 0,
+--        CLKFX_MULTIPLY        => 8,
+--        CLKFX_DIVIDE          => 7,
+--        CLKDV_DIVIDE          => 2.0,
+--        STARTUP_WAIT          => FALSE,
+--        CLKIN_PERIOD          => 31.25
+--       )
+--      port map (
+--        CLKIN    => CLKIN_IBUFG,
+--        CLKFB    => CLKFB_IN,
+--        DSSEN    => '0',
+--        PSINCDEC => '0',
+--        PSEN     => '0',
+--        PSCLK    => '0',
+--        RST      => RST_IN,
+--        CLK0     => CLK0_BUF,
+--        CLK90    => open,
+--        CLK180   => open,
+--        CLK270   => open,
+--        CLK2X    => open,
+--        CLK2X180 => open,
+--        CLKDV    => open,
+--        CLKFX    => CLKFX_BUF,
+--        CLKFX180 => open,
+--        LOCKED   => I_DCM_LOCKED,
+--        PSDONE   => open
+--       );
 
 
-  IBUFG0 : IBUFG port map (I=> CLKIN_IN,  O => CLKIN_IBUFG);
-  BUFG0  : BUFG  port map (I=> CLK0_BUF,  O => CLKFB_IN);
-  BUFG1  : BUFG  port map (I=> CLKFX_BUF, O => CLK_36M);
+--  IBUFG0 : IBUFG port map (I=> CLKIN_IN,  O => CLKIN_IBUFG);
+--  BUFG0  : BUFG  port map (I=> CLK0_BUF,  O => CLKFB_IN);
+--  BUFG1  : BUFG  port map (I=> CLKFX_BUF, O => CLK_36M);
   O_CLK_12M       <= CLK_12M;
   O_CLK_06M       <= CLK_6M;
   O_CLK_06Mn      <= CLK_6Mn;
   O_CLK_18M       <= CLK_18M;
-  O_CLK_36M       <= CLK_36M;
+--  O_CLK_36M       <= CLK_36M;
 
 -- 2/3 clock divider(duty 33%)
 -- I_CLK   1010101010101010101
@@ -107,13 +108,13 @@ begin
 process(CLK_36M)
 begin
 	if rising_edge(CLK_36M) then
-		if (I_DCM_LOCKED = '1') then
+		if (RST_IN = '0') then
 			case state is
 				when "00" => state <= "01";
 				when "01" => state <= "10";
 				when "10" => state <= "00";
 				when "11" => state <= "00";
-        when others => null;
+				when others => null;
 			end case;
 
 			if (state = "10") then
@@ -131,7 +132,7 @@ end process;
 process(CLK_36M)
 begin
 	if rising_edge(CLK_36M) then
-		if (I_DCM_LOCKED = '1') then
+		if (RST_IN = '0') then
 			CLK_18M <= not CLK_18M;
 		else
 			CLK_18M <= '0';

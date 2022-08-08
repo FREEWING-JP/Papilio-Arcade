@@ -26,7 +26,7 @@ use work.pkg_galaxian.all;
 entity galaxian_top is
 	port(
 		--    FPGA_USE
-		CLK     : in  std_logic;
+		CLK_36M     : in  std_logic;
 
 		--    INPORT SW IF
 		I_SW         : in  std_logic_vector(8 downto 0);
@@ -69,7 +69,7 @@ architecture RTL of galaxian_top is
 	-------- CLOCK GEN ---------------------------
 	signal W_CLK_12M          : std_logic := '0';
 	signal W_CLK_18M          : std_logic := '0';
-	signal W_CLK_36M          : std_logic := '0';
+--	signal W_CLK_36M          : std_logic := '0';
 	signal W_CLK_6M           : std_logic := '0';
 	signal W_CLK_6Mn          : std_logic := '0';
 	signal WB_CLK_12M         : std_logic := '0';
@@ -218,9 +218,9 @@ begin
 
 	mc_clocks : entity work.CLOCKGEN
 	port map(
-		CLKIN_IN   => CLK,
+		CLK_36M   => CLK_36M,
 		RST_IN     => not W_RESETn,
-		O_CLK_36M  => W_CLK_36M,
+--		O_CLK_36M  => W_CLK_36M,
 		O_CLK_18M  => W_CLK_18M,
 		O_CLK_12M  => WB_CLK_12M,
 		O_CLK_06M  => WB_CLK_6M,
@@ -483,11 +483,11 @@ begin
 	);
 
 --------- BUTTONS       ---------------------
-	U1 <= not I_SW(0) when HWSEL_GALAXIAN  else I_SW(0);
-   D1 <= not I_SW(1) when HWSEL_GALAXIAN  else I_SW(1);
-   L1 <= not I_SW(2) when HWSEL_GALAXIAN  else I_SW(3);
-   R1 <= not I_SW(3) when HWSEL_GALAXIAN  else I_SW(2);
-   J1 <= not I_SW(4) when HWSEL_GALAXIAN  else I_SW(4);
+	U1 <= not I_SW(0) when HWSEL_GALAXIAN  else not I_SW(0);
+   D1 <= not I_SW(1) when HWSEL_GALAXIAN  else not I_SW(1);
+   L1 <= not I_SW(2) when HWSEL_GALAXIAN  else not I_SW(2);
+   R1 <= not I_SW(3) when HWSEL_GALAXIAN  else not I_SW(3);
+   J1 <= not I_SW(4) when HWSEL_GALAXIAN  else not I_SW(4);
 	
 	S1 <= not I_SW(5);
 	S2 <= not I_SW(7);
