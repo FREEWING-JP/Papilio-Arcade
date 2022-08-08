@@ -24,9 +24,9 @@ copy /b/y %rom_path_src%\5e.cpu + %rom_path_src%\5f.cpu %rom_path%\gfx1.bin > NU
 copy /b/y %rom_path_src%\6e.cpu + %rom_path_src%\6f.cpu + %rom_path_src%\6h.cpu + %rom_path_src%\6j.cpu %rom_path%\main.bin > NUL
 
 REM generate RTL code for small PROMS
-%romgen_path%\romgen %rom_path_src%\82s126.1m     PROM1_DST  9 c     > %rom_path%\prom1_dst.vhd
-%romgen_path%\romgen %rom_path_src%\4a.cpu        PROM4_DST  8 c     > %rom_path%\prom4_dst.vhd
-%romgen_path%\romgen %rom_path_src%\7f.cpu        PROM7_DST  4 c     > %rom_path%\prom7_dst.vhd
+%romgen_path%\romgen %rom_path_src%\82s126.1m     PROM1_DST  9 l r e     > %rom_path%\prom1_dst.vhd
+%romgen_path%\romgen %rom_path_src%\4a.cpu        PROM4_DST  8 l r e     > %rom_path%\prom4_dst.vhd
+%romgen_path%\romgen %rom_path_src%\7f.cpu        PROM7_DST  4 l r e     > %rom_path%\prom7_dst.vhd
 
 REM generate RAMB structures for larger ROMS
 %romgen_path%\romgen %rom_path%\gfx1.bin          GFX1      13 l r e > %rom_path%\gfx1.vhd

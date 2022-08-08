@@ -27,9 +27,9 @@ copy /b/y %rom_path_src%\gorkgfx4.rom + %rom_path_src%\gorkgfx2.rom + %rom_path_
 copy /b/y %rom_path_src%\gorkans8.rom + %rom_path_src%\gorkans4.rom + %rom_path_src%\gorkans7.rom + %rom_path_src%\gorkans3.rom + %rom_path_src%\gorkans6.rom + %rom_path_src%\gorkans2.rom + %rom_path_src%\gorkans5.rom + %rom_path_src%\gorkans1.rom %rom_path%\main.bin > NUL
 
 REM generate RTL code for small PROMS
-%romgen_path%\romgen %rom_path_src%\gorkprom.3    PROM1_DST  9 c     > %rom_path%\prom1_dst.vhd
-%romgen_path%\romgen %rom_path_src%\gorkprom.1    PROM4_DST  8 c     > %rom_path%\prom4_dst.vhd
-%romgen_path%\romgen %rom_path_src%\gorkprom.4    PROM7_DST  4 c     > %rom_path%\prom7_dst.vhd
+%romgen_path%\romgen %rom_path_src%\gorkprom.3    PROM1_DST  9 l r e     > %rom_path%\prom1_dst.vhd
+%romgen_path%\romgen %rom_path_src%\gorkprom.1    PROM4_DST  8 l r e     > %rom_path%\prom4_dst.vhd
+%romgen_path%\romgen %rom_path_src%\gorkprom.4    PROM7_DST  4 l r e     > %rom_path%\prom7_dst.vhd
 
 REM generate RAMB structures for larger ROMS
 %romgen_path%\romgen %rom_path%\gfx1.bin          GFX1      13 l r e > %rom_path%\gfx1.vhd
