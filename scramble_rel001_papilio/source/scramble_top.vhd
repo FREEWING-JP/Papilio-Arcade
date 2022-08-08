@@ -79,7 +79,8 @@ entity SCRAMBLE_TOP is
 --    O_LED                 : out   std_logic_vector(3 downto 0);
     --
     I_RESET               : in    std_logic;
-    OSC_IN                : in    std_logic
+--    OSC_IN                : in    std_logic; -- 32MHz
+    CLK_24MHz             : in    std_logic  -- 24.576MHz
 
     );
 end;
@@ -146,18 +147,22 @@ begin
   --
   -- clocks
   --
+--  clk_ref <= OSC_IN;
+  clk <= CLK_24MHz;
+
   u_clocks : entity work.SCRAMBLE_CLOCKS
     port map (
-      I_CLK_REF  => OSC_IN,
+--      I_CLK_REF  => OSC_IN,
+      I_CLK      => CLK_24MHz,
       I_RESET_L  => I_RESET_L,
       --
-      O_CLK_REF  => clk_ref,  -- 50
+--      O_CLK_REF  => clk_ref,  -- 50
       --
       O_ENA_12   => ena_12,   -- 6.25 x 2
       O_ENA_6B   => ena_6b,   -- 6.25 (inverted)
       O_ENA_6    => ena_6,    -- 6.25
       O_ENA_1_79 => ena_1_79, -- 1.786
-      O_CLK      => clk,
+--      O_CLK      => clk,
       O_RESET    => reset
       );
 
@@ -274,7 +279,8 @@ begin
       msbi_g => 9
     )
     port  map(
-      clk_i   => clk_ref,
+--      clk_i   => clk_ref,
+      clk_i   => clk,
       res_n_i => I_RESET_L,
       dac_i   => audio,
       dac_o   => audio_pwm
@@ -313,13 +319,15 @@ begin
   -- start, shoot1, shoot2, left,right,up,down
   ip_1p(6) <= not button_debounced(4); -- start 1
   ip_1p(5) <= button_debounced(6); -- shoot1
-  ip_1p(4) <= button_debounced(6); -- shoot2
+--  ip_1p(4) <= button_debounced(6); -- shoot2
+  ip_1p(4) <= button_debounced(7); -- shoot2
   ip_1p(3) <= button_debounced(2); -- p1 left
   ip_1p(2) <= button_debounced(3); -- p1 right
   ip_1p(1) <= button_debounced(0); -- p1 up
   ip_1p(0) <= button_debounced(1); -- p1 down
   --
-  ip_2p(6) <= not button_debounced(7); -- start 2
+--  ip_2p(6) <= not button_debounced(7); -- start 2
+  ip_2p(6) <= '1';
   ip_2p(5) <= '1';
   ip_2p(4) <= '1';
   ip_2p(3) <= button_debounced(2); -- p2 left
