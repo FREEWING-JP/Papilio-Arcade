@@ -74,15 +74,17 @@ entity invaders_top is
 		JOYSTICK_GND      : out   std_logic;
 		--
 		I_RESET           : in    std_logic;
-		OSC_IN            : in    std_logic
+--		OSC_IN            : in    std_logic
+		Clk               : in    std_logic;
+		Clk_x2            : in    std_logic
 		);
 end invaders_top;
 
 architecture rtl of invaders_top is
 
 	signal I_RESET_L       : std_logic;
-	signal Clk             : std_logic;
-	signal Clk_x2          : std_logic;
+--	signal Clk             : std_logic;
+--	signal Clk_x2          : std_logic;
 	signal Rst_n_s         : std_logic;
 
 	signal DIP             : std_logic_vector(8 downto 1);
@@ -142,14 +144,14 @@ begin
   --
   I_RESET_L <= not I_RESET;
   --
-  u_clocks : entity work.INVADERS_CLOCKS
-	port map (
-	   I_CLK_REF  => OSC_IN,
-	   I_RESET_L  => I_RESET_L,
-	   --
-	   O_CLK      => Clk,
-	   O_CLK_X2   => Clk_x2
-	 );
+--  u_clocks : entity work.INVADERS_CLOCKS
+--	port map (
+--	   I_CLK_REF  => OSC_IN,
+--	   I_RESET_L  => I_RESET_L,
+--	   --
+--	   O_CLK      => Clk,
+--	   O_CLK_X2   => Clk_x2
+--	 );
 
 	Buttons_n <= not Buttons(8 downto 1);
 	DIP <= "00000000";
@@ -181,13 +183,33 @@ begin
 	--
 	-- ROM
 	--
+	-- 0x0000-0x1FFF
 	u_rom : entity work.INVADERS_ROM
 	  port map (
 		CLK         => Clk,
-		ENA         => '1',
+		ENA         => not AD(14),
 		ADDR        => AD(12 downto 0),
-		DATA        => IB
+		DATA        => rom_data_0
 		);
+	--
+	-- 0x4000-0x4FFF for Lunar Rescue
+--	u_rom_2 : entity work.INVADERS_ROM_2
+--	  port map (
+--		CLK         => Clk,
+--		ENA         => AD(14),
+--		ADDR        => AD(12 downto 0),
+--		DATA        => rom_data_1
+--		);
+	--
+	p_rom_data : process(AD, rom_data_0, rom_data_1)
+	begin
+	  IB <= (others => '0');
+	  case AD(14) is
+		when '0' => IB <= rom_data_0;
+--		when '1' => IB <= rom_data_1;
+		when others => null;
+	  end case;
+	end process;
 
 --	u_rom_h : entity work.INVADERS_ROM_H
 --	  port map (
